@@ -1,0 +1,79 @@
+/* Field settings */
+.image-select-field .acf-row .acf-field {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.image-select-field .acf-field-image-select-repeater-value,
+.image-select-field .acf-field-image-select-repeater-label {
+    max-width: 45%;
+}
+
+/* Backend settings */
+.acf-field-image-select .acf-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+/* Container and image */
+.acf-field-image-select .image-select__label {
+    position: relative;
+    flex: 0 0 31%;
+}
+
+.acf-field-image-select .image-select__label.image-select-per-row--1{
+    flex: 0 0 100%;
+}
+
+.acf-field-image-select .image-select__label.image-select-per-row--2 {
+    flex: 0 0 48%;
+}
+
+.acf-field-image-select .image-select__label.image-select-per-row--3 {
+    flex: 0 0 31%;
+}
+
+.acf-field-image-select .image-select__label.image-select-per-row--4 {
+    flex: 0 0 22%;
+}
+
+.acf-field-image-select .image-select__label.image-select-per-row--5 {
+    flex: 0 0 20%;
+}
+
+.acf-field-image-select .image-select__image {
+    width: 100%;
+    min-width: 175px;
+    object-fit: contain;
+    filter: drop-shadow(2px 4px 6px #BEBEBE);
+}
+
+/* Checked effect */
+.acf-field-image-select .image-select__radio:checked +  .image-select__checkmark {
+    display: block;
+}
+
+.acf-field-image-select .image-select__checkmark {
+    display: none;
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    right: 8px;
+    top: 8px;
+    z-index: 1000;
+}
+
+/* Radio */
+.acf-field-image-select .image-select__radio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+}
+
+/* Label */
+.acf-field-image-select .image-select__label p {
+    text-align: center;
+    font-weight: bold;
+}
