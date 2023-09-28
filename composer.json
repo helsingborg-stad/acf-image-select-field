@@ -1,6 +1,6 @@
 {
     "name": "helsingborg-stad/acf-select-image-field",
-    "type": "wordpress-muplugin", 
+    "type": "wordpress-muplugin",
     "license": "MIT",
     "authors": [
         {
@@ -8,5 +8,6 @@
             "email": "niclas.norin@helsingborg.se"
         }
     ],
-    "require": {}
+    "require": [],
+    "version": "1.0.0"
 }
