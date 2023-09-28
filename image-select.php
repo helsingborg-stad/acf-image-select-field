@@ -113,5 +113,3 @@ class AcfImageSelectField extends acf_field
 }
 
 new AcfImageSelectField;
-
-?>
