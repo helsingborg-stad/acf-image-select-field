@@ -50,23 +50,6 @@ class AcfImageSelectField extends acf_field
      */
     public function render_field_settings($field)
     {
-
-        acf_render_field_setting($field, array(
-            'label' => 'Items per row',
-            'instructions' => 'Preferred amount of items per row',
-            'type' => 'select',
-            'name' => 'image-select-per-row',
-            'required' => 1,
-            'default' => '2',
-            'choices' => array(
-                '1' => '1',
-                '2' => '2',
-                '3' => '3',
-                '4' => '4',
-                '5' => '5',
-            ),
-        ));
-
         acf_render_field_setting($field, array(
             'label' => 'Choices',
             'instructions' => 'Enter the choices for your select field.',

@@ -1,13 +1,13 @@
 <?php
 /*
-Plugin Name:    WPMU Acf image select
+Plugin Name:    Acf image select
 Description:    Radio buttons as images.
 Version:        1.0
 Author:         Niclas Norin
 */
-namespace WPMUAcfImageSelect;
+namespace AcfImageSelect;
 
-class WPMUAcfImageSelect
+class AcfImageSelect
 {
 	/*
 	*  Construct
@@ -19,7 +19,7 @@ class WPMUAcfImageSelect
 	function __construct()
 	{
 		add_action('acf/include_field_types', array($this, 'register_field_type_image_select'));
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_styles' ) );
+		add_action('admin_enqueue_scripts', array( $this, 'register_admin_styles' ));
 	}
 
 	/**
@@ -33,10 +33,10 @@ class WPMUAcfImageSelect
  	 * Registers and enqueues admin-specific styles.
  	 */
  	public function register_admin_styles() {
- 		wp_enqueue_style( 'acf-image-select', plugins_url( 'acf-image-select.css', __FILE__  ) );
+ 		wp_enqueue_style('acf-image-select', plugins_url( 'acf-image-select.css', __FILE__  ));
  	}
 }
 
-new \WPMUAcfImageSelect\WPMUAcfImageSelect();
+new \AcfImageSelect\AcfImageSelect();
 
 ?>

@@ -9,44 +9,25 @@
     max-width: 45%;
 }
 
-/* Backend settings */
+/* Backend settings flex */
 .acf-field-image-select .acf-input {
     display: flex;
     flex-wrap: wrap;
     gap: 32px;
 }
 
-/* Container and image */
 .acf-field-image-select .image-select__label {
     position: relative;
-    flex: 0 0 31%;
+    display: flex;
+    flex-direction: column;
 }
 
-.acf-field-image-select .image-select__label.image-select-per-row--1{
-    flex: 0 0 100%;
-}
-
-.acf-field-image-select .image-select__label.image-select-per-row--2 {
-    flex: 0 0 48%;
-}
-
-.acf-field-image-select .image-select__label.image-select-per-row--3 {
-    flex: 0 0 31%;
-}
-
-.acf-field-image-select .image-select__label.image-select-per-row--4 {
-    flex: 0 0 22%;
-}
-
-.acf-field-image-select .image-select__label.image-select-per-row--5 {
-    flex: 0 0 20%;
-}
+/* Container and image */
 
 .acf-field-image-select .image-select__image {
-    width: 100%;
-    min-width: 175px;
     object-fit: contain;
-    filter: drop-shadow(2px 4px 6px #BEBEBE);
+    height: 170px;
+    filter: drop-shadow(1px 1px 2px rgba(190, 190, 190, 0.5));
 }
 
 /* Checked effect */
