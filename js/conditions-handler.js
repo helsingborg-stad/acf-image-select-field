@@ -54,13 +54,16 @@ class ImageSelect {
             el.classList.remove('acf-hidden');
             el.removeAttribute('hidden');
             el.removeAttribute('disabled');
-            el.querySelector('input:not([type="hidden"])')?.removeAttribute('disabled');
-            
+            [...el.querySelectorAll('.acf-input [disabled]:not([type="hidden"])')].forEach(childEl => {
+                childEl.removeAttribute('disabled');            
+            });
         } else {
             el.classList.add('acf-hidden');
             el.setAttribute('hidden', '');
             el.setAttribute('disabled', '');
-            el.querySelector('input:not([type="hidden"])')?.setAttribute('disabled', '');
+            [...el.querySelectorAll('.acf-input :is(select, textarea, input:not([type="hidden"]))')].forEach(childEl => {
+                childEl.setAttribute('disabled', '');
+            });
         }
     }
 
