@@ -8,6 +8,9 @@ class ImageSelect {
        (this.ImageSelectSiblingFieldsConditions && this.imageSelectFieldKey) && this.setupListeners();
     }
 
+    /**
+     * Setup listeners and also runs the conditional once right away.
+     */
     setupListeners() {
         const checked = this.imageSelectField.querySelector('input:checked');
         if (checked) {
@@ -23,18 +26,28 @@ class ImageSelect {
         });
     }
 
+    /**
+     * Handle conditions based on the selected value.
+     *
+     * @param {string} value - The selected value.
+     */
     handleConditons(value) {
-        if (!Array.isArray(this.ImageSelectSiblingFieldsConditions)) return;
+        if (!Array.isArray(this.ImageSelectSiblingFieldsConditions) || !value) return;
         this.ImageSelectSiblingFieldsConditions.forEach(conditions => {
             if (conditions.hasOwnProperty('and')) {
                 this.shouldShowACFField(this.handleAndConditions(conditions.and, value), conditions.el);
             } else if (conditions.hasOwnProperty('or')) {
-
                 this.shouldShowACFField(this.handleOrConditions(conditions.or, value), conditions.el);
             }
         });
     }
 
+    /**
+     * Show or hide an ACF field based on the provided condition.
+     *
+     * @param {boolean} shouldShow - Whether the field should be shown.
+     * @param {HTMLElement} el - The ACF field element.
+     */
     shouldShowACFField(shouldShow, el) {
         if (!el) return;
         if (shouldShow) {
@@ -51,6 +64,14 @@ class ImageSelect {
         }
     }
 
+
+    /**
+     * Handle OR conditions.
+     *
+     * @param {object} or - OR conditions object.
+     * @param {string} value - The selected value.
+     * @returns {boolean} - Whether any OR condition is met.
+     */
     handleOrConditions(or, value) {
         let arr = [false];
         if (or.hasOwnProperty('!=')) {
@@ -72,6 +93,13 @@ class ImageSelect {
         return arr.includes(true);
     }
 
+    /**
+     * Handle AND conditions.
+     *
+     * @param {object} and - AND conditions object.
+     * @param {string} value - The selected value.
+     * @returns {boolean} - Whether all AND conditions are met.
+     */
     handleAndConditions(and, value) {
         let arr = [];
         if (and.hasOwnProperty('!=')) {
@@ -89,6 +117,11 @@ class ImageSelect {
         return !arr.includes(false);
     }
 
+    /**
+     * Get sibling fields and their conditions.
+     *
+     * @returns {Array|boolean} - An array of structured sibling fields with conditions or false if none.
+     */
     getSiblingFields() {
         const siblings = this.imageSelectFieldGroup?.querySelectorAll('.acf-field');
         let structuredSiblingsArr = [];
@@ -116,6 +149,12 @@ class ImageSelect {
         return false;
     }
 
+    /**
+     * Parse JSON conditions from a sibling element.
+     *
+     * @param {HTMLElement} sibling - The sibling element containing JSON conditions.
+     * @returns {Array|null} - Parsed conditions array or null if parsing fails.
+     */
     getJsonCondition(sibling) {
         try {
             return JSON.parse(sibling.getAttribute('data-conditions'));
@@ -124,6 +163,15 @@ class ImageSelect {
         }
     }
 
+    /**
+     * Structure an "and" condition object.
+     *
+     * @param {object} ob - The object to be structured.
+     * @param {string} fieldKey - The field key.
+     * @param {Array} condition - The "and" condition.
+     * @param {HTMLElement} sibling - The sibling element.
+     * @returns {object} - The structured object.
+     */
     structureAndObject(ob, fieldKey, condition, sibling) {
         if (!ob.hasOwnProperty('and')) {
             ob.and = {}
@@ -137,6 +185,15 @@ class ImageSelect {
         return ob;
     }
 
+    /**
+     * Structure an "or" condition object.
+     *
+     * @param {object} ob - The object to be structured.
+     * @param {string} fieldKey - The field key.
+     * @param {Array} condition - The "or" condition.
+     * @param {HTMLElement} sibling - The sibling element.
+     * @returns {object} - The structured object.
+     */
     structureOrObject(ob, fieldKey, condition, sibling) {
         if (!ob.hasOwnProperty('or')) {
             ob.or = {};
@@ -147,6 +204,15 @@ class ImageSelect {
         return ob;
     }
 
+    /**
+     * Set a value in the condition object.
+     *
+     * @param {object} ob - The object to set the value in.
+     * @param {string} operator - The operator key.
+     * @param {string} value - The value to set.
+     * @param {string} key - The key (e.g., 'and' or 'or').
+     * @returns {object} - The modified object.
+     */
     setObValue(ob, operator, value, key) {
         if (!ob[key].hasOwnProperty(operator)) {
             ob[key][operator] = [value];
@@ -154,26 +220,6 @@ class ImageSelect {
             ob[key][operator].push(value);
         }
         return ob;
-    }
-
-    getOrCondition(condition) {
-        let ob = {};
-        if (condition[0].field && condition[0].field === this.imageSelectFieldKey && condition[0].operator && condition[0].value) {
-            ob['or'] = {};
-            ob['or'][condition[0].operator] = condition[0].value;
-            return ob;
-        }
-    }
-
-    getAndCondition(condition) {
-        let conditionArr = [];
-        condition.forEach(and => {
-            if (and.field && and.field === this.imageSelectFieldKey && and.operator && and.value) {
-                conditionArr.push(and.operator + ' ' + and.value);
-            }
-        });
-        
-        return conditionArr;
     }
 }
 document.addEventListener('DOMContentLoaded',() => {
