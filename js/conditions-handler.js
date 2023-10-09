@@ -59,7 +59,7 @@ class ImageSelect {
             el.classList.remove('acf-hidden');
             el.removeAttribute('hidden');
             el.removeAttribute('disabled');
-            [...el.querySelectorAll('.acf-input [disabled]:not([type="hidden"])')].forEach(childEl => {
+            [...el.querySelectorAll('.acf-input [disabled]')].forEach(childEl => {
                 childEl.removeAttribute('disabled');            
             });
         } else {
