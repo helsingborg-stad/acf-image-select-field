@@ -1,27 +1,22 @@
 class ImageSelect {
     constructor(imageSelect) {
         this.imageSelectField = imageSelect;
-        this.imageSelectFieldKey = imageSelect?.hasAttribute('data-key') ? imageSelect.getAttribute('data-key') : false;
         this.imageSelectFieldGroup = this.imageSelectField?.closest('.postbox.acf-postbox');
+        this.imageSelectFieldKey = imageSelect?.hasAttribute('data-key') ? imageSelect.getAttribute('data-key') : false;
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
-       (this.ImageSelectSiblingFieldsConditions && this.imageSelectFieldKey) && this.setupListeners();
+        this.ImageSelectSiblingFieldsConditions && this.setupListeners();
     }
 
     /**
      * Setup listeners and also runs the conditional once right away.
      */
     setupListeners() {
-        const checked = this.imageSelectField.querySelector('input:checked');
-        if (checked) {
-            this.imageSelectField.setAttribute('value', checked.value);
-            this.handleConditons(checked.value);
-        }
-
+        this.handleConditions(false);
         this.imageSelectField.addEventListener('change', (e) => {
             if (e.target) {
                 this.imageSelectField.setAttribute('value', e.target.value);
-                this.handleConditons(e.target.value);
+                this.handleConditions(e.target.value);
             }
         });
     }
@@ -31,7 +26,17 @@ class ImageSelect {
      *
      * @param {string} value - The selected value.
      */
-    handleConditons(value) {
+    handleConditions(value = false) {
+        if (!value) {
+            const checked = this.imageSelectField.querySelector('input:checked');
+            if (checked) {
+                this.imageSelectField.setAttribute('value', checked.value);
+                value = checked.value;
+            } else {
+                return;
+            }
+        }
+        
         if (!Array.isArray(this.ImageSelectSiblingFieldsConditions) || !value) return;
         this.ImageSelectSiblingFieldsConditions.forEach(conditions => {
             if (conditions.hasOwnProperty('and')) {
@@ -66,7 +71,6 @@ class ImageSelect {
             });
         }
     }
-
 
     /**
      * Handle OR conditions.
@@ -129,20 +133,15 @@ class ImageSelect {
         const siblings = this.imageSelectFieldGroup?.querySelectorAll('.acf-field');
         let structuredSiblingsArr = [];
         if (siblings.length > 0) {
-            [...siblings].forEach(sibling => {
-                let ob = {};
-                if (sibling.hasAttribute('data-conditions') && sibling.hasAttribute('data-key')) {
-                    const fieldKey = sibling.getAttribute('data-key');
-                    const conditions = this.getJsonCondition(sibling);
-                    if (!conditions || !Array.isArray(conditions)) return;
-                    conditions.forEach(condition => {
-                        if (Array.isArray(condition) && condition.length > 1) {
-                            ob = this.structureAndObject(ob, fieldKey, condition, sibling);
-                        } else {
-                            ob = this.structureOrObject(ob, fieldKey, condition, sibling);
-                        }
-                    });
+            [...siblings].forEach(field => {
+                const ob = this.buildConditionsObject(field); 
+
+                if (ob) {
                     structuredSiblingsArr.push(ob);
+                }
+
+                if (field.classList.contains('acf-field-repeater')) {
+                    this.setUpRepeaterListener(field);
                 }
             });
 
@@ -150,6 +149,64 @@ class ImageSelect {
         }
 
         return false;
+    }
+
+    /**
+     * Builds a conditions object from the specified field's attributes and data.
+     *
+     * @param {HTMLElement} field - The field element.
+     * @returns {object|false} - The structured conditions object or false if conditions are not available.
+     */
+    buildConditionsObject(field) {
+        let ob = {};
+        if (field.hasAttribute('data-conditions') && field.hasAttribute('data-key')) {
+            const conditions = this.getJsonCondition(field);
+            if (!conditions || !Array.isArray(conditions)) return;
+            conditions.forEach(condition => {
+                if (Array.isArray(condition) && condition.length > 1) {
+                    ob = this.structureAndObject(ob, condition, field);
+                } else {
+                    ob = this.structureOrObject(ob, condition, field);
+                }
+            });
+            return ob;
+        }
+
+        return false;
+    }
+
+    /**
+     * Sets up a MutationObserver to listen for changes in the specified field's child elements,
+     * particularly for the addition of ACF rows, and updates the conditional logic accordingly.
+     *
+     * @param {HTMLElement} field - The field element.
+     */
+    setUpRepeaterListener(field) {
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.classList && node.classList.contains('acf-row')) {
+                            const row = node;
+                            const fields = row.querySelectorAll('.acf-field');
+
+                            fields.forEach(field => {
+                                const ob = this.buildConditionsObject(field);
+                                if (ob) {
+                                    this.ImageSelectSiblingFieldsConditions.push(ob);
+                                }
+                            });
+                            this.handleConditions(false);
+                        }
+                    });
+                }
+            }
+        });
+
+        observer.observe(field, {
+            childList: true,
+            subtree: true
+        });        
     }
 
     /**
@@ -170,21 +227,24 @@ class ImageSelect {
      * Structure an "and" condition object.
      *
      * @param {object} ob - The object to be structured.
-     * @param {string} fieldKey - The field key.
      * @param {Array} condition - The "and" condition.
      * @param {HTMLElement} sibling - The sibling element.
      * @returns {object} - The structured object.
      */
-    structureAndObject(ob, fieldKey, condition, sibling) {
+    structureAndObject(ob, condition, sibling) {
         if (!ob.hasOwnProperty('and')) {
-            ob.and = {}
+            ob.and = {};
         }
+
         condition.forEach(and => {
-            this.setObValue(ob, and.operator, and.value, 'and')
+            if (and.field == this.imageSelectFieldKey) {
+                ob = this.setObValue(ob, and.operator, and.value, 'and');
+            } else {
+                return {};
+            }
         });
-    
+        
         ob.el = sibling;
-    
         return ob;
     }
 
@@ -192,18 +252,21 @@ class ImageSelect {
      * Structure an "or" condition object.
      *
      * @param {object} ob - The object to be structured.
-     * @param {string} fieldKey - The field key.
      * @param {Array} condition - The "or" condition.
      * @param {HTMLElement} sibling - The sibling element.
      * @returns {object} - The structured object.
      */
-    structureOrObject(ob, fieldKey, condition, sibling) {
+    structureOrObject(ob, condition, sibling) {
         if (!ob.hasOwnProperty('or')) {
             ob.or = {};
             ob.el = sibling;
         }
 
-        ob = this.setObValue(ob, condition[0].operator, condition[0].value, 'or');
+        if (condition[0]?.field && condition[0].field == this.imageSelectFieldKey) {
+            ob = this.setObValue(ob, condition[0]?.operator, condition[0]?.value, 'or');
+        } else {
+            return {};
+        }
         return ob;
     }
 
