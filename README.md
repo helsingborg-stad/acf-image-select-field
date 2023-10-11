@@ -27,7 +27,7 @@ To add your own images:
 
 The ACF Image Select plugin has the following limitations regarding conditional logic:
 
-- It supports either "and" or "or" conditionals.
+- It supports either "and" or "or" conditionals. Not both.
   
   **Supported Conditionals:**
   - "image select" is not equal to "condition1" AND "image select" is not equal to "condition2"
