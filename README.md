@@ -30,10 +30,10 @@ The ACF Image Select plugin has the following limitations regarding conditional 
 - It supports either "and" or "or" conditionals. Not both.
   
   **Supported Conditionals:**
-  - "image select" is not equal to "condition1" AND "image select" is not equal to "condition2"
-  - "image select" is equal to "condition1" OR "image select" is equal to "condition2"
+  - "image select" != "condition1" AND "image select" != "condition2"
+  - "image select" == "condition1" OR "image select" == "condition2"
   
   **Unsupported Conditionals:**
-  - "image select" is not equal to "condition1" OR "image select" is not equal to "condition2" AND "image select" is not equal to "condition3"
+  - "image select" != "condition1" OR "image select" != "condition2" AND "image select" != "condition3"
 
 Please keep these limitations in mind when implementing conditional logic with the ACF Image Select field.
