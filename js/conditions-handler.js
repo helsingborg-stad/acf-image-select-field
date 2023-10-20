@@ -1,7 +1,7 @@
 class ImageSelect {
     constructor(imageSelect) {
         this.imageSelectField = imageSelect;
-        this.imageSelectFieldGroup = this.imageSelectField?.closest('.postbox.acf-postbox');
+        this.imageSelectFieldGroup = this.imageSelectField?.parentElement;
         this.imageSelectFieldKey = imageSelect?.hasAttribute('data-key') ? imageSelect.getAttribute('data-key') : false;
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
@@ -132,7 +132,7 @@ class ImageSelect {
     getSiblingFields() {
         const siblings = this.imageSelectFieldGroup?.querySelectorAll('.acf-field');
         let structuredSiblingsArr = [];
-        if (siblings.length > 0) {
+        if (siblings && siblings.length > 0) {
             [...siblings].forEach(field => {
                 const ob = this.buildConditionsObject(field); 
 
@@ -295,4 +295,25 @@ document.addEventListener('DOMContentLoaded',() => {
             new ImageSelect(imageSelect);
         });
     }
+
+    const observer = new MutationObserver(mutationsList => {
+        mutationsList.forEach((mutation) => {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                mutation.addedNodes.forEach((addedNode) => {
+                    if (addedNode instanceof HTMLElement &&
+                        addedNode.classList.contains('acf-block-fields') &&
+                        addedNode.querySelector('.acf-field.acf-field-image-select')) {
+                        const imageSelectBlocks = addedNode.querySelectorAll('.acf-field.acf-field-image-select');
+
+                        imageSelectBlocks.forEach(imageSelect => {
+                            new ImageSelect(imageSelect);
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    const config = { childList: true, subtree: true };
+    observer.observe(document, config);
 });
