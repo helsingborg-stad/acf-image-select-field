@@ -27,8 +27,10 @@
 
 .acf-field-image-select .image-select__image {
     object-fit: contain;
-    height: 170px;
-    filter: drop-shadow(1px 1px 2px rgba(190, 190, 190, 0.5));
+    height: 120px;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    background: #fff;
 }
 
 /* Checked effect */
@@ -58,4 +60,5 @@
 .acf-field-image-select .image-select__label p {
     text-align: center;
     font-weight: bold;
+    margin-top: 0;
 }
