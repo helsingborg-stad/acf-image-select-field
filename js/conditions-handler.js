@@ -217,7 +217,19 @@ class ImageSelect {
      */
     getJsonCondition(sibling) {
         try {
-            return JSON.parse(sibling.getAttribute('data-conditions'));
+            const json = JSON.parse(sibling.getAttribute('data-conditions'));
+
+            if (json[0][0].field) {
+                const conditionFieldTarget = json[0][0].field;
+                let test = conditionFieldTarget.split("_");
+                if (test[1]) {
+                    let field = document.querySelector('.acf-field-' + test[1]);
+                    if (field.classList.contains('acf-field-image-select')) {
+                        return json;
+                    }
+                }
+            }
+            return false;
         } catch (error) {
             return null;
         }
