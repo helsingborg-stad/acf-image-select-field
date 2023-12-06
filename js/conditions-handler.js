@@ -5,17 +5,21 @@ class ImageSelect {
         this.imageSelectFieldKey = imageSelect?.hasAttribute('data-key') ? imageSelect.getAttribute('data-key') : false;
         this.imageSelectFieldName = this.imageSelectField?.hasAttribute('data-name') ? this.imageSelectField?.getAttribute('data-name') : "";
 
-        //Hidden conditionalfield if wanted correct more specific conditions.
-        const conditionalField = this.imageSelectFieldGroup?.querySelector('[data-name="' + this.imageSelectFieldName + '_conditional"]');
-        this.conditionalAcfField = conditionalField && conditionalField.hasAttribute('data-key') ? acf.getField(conditionalField.getAttribute('data-key')) : false;
-
+        //Conditionals based on Hidden field (acf condtional logic)
+        const conditionalField = this.imageSelectFieldGroup?.querySelector(`[data-name="${this.imageSelectFieldName}_conditional"]`);
+        this.conditionalAcfField = conditionalField?.hasAttribute('data-key') ? acf.getField(conditionalField.getAttribute('data-key')) : false;
+        
+        //Conditionals based on Image Select field (custom conditional logic)
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
+        //Run functionality
         this.imageSelectField && this.handleConditionsType();
     }
 
     /**
-     * Setup listeners and also runs the conditional once right away.
+     * Get the current value of the Image Select field.
+     * If there is a hidden conditional Acf field this will work as the main conditional. 
+     * otherwise it will be the custom conditional which will work in most cases (not as good for repeater fields.)
      */
     handleConditionsType() {       
         const value = this.defaultImageSelectValue();
@@ -27,6 +31,9 @@ class ImageSelect {
         this.setupChangeListener();
     }
 
+    /**
+     * Listen to changes in the Image Select field. If there is a hidden conditional Acf field, acf will handle the conditional logic. Otherwise, custom conditional logic will run.
+     */
     setupChangeListener() {
         this.imageSelectField.addEventListener('change', (e) => {
             if (e.target) {
@@ -38,6 +45,11 @@ class ImageSelect {
         });
     }
 
+    /**
+     * Gets the current value of the Image Select field.
+     * 
+     * @returns {string} - Returns the current value of the Image Select field.
+     */
     defaultImageSelectValue() {
         const checked = this.imageSelectField.querySelector('input:checked');
         if (checked) {
@@ -53,7 +65,7 @@ class ImageSelect {
      *
      * @param {string} value - The selected value.
      */
-    handleConditions(value = false) {        
+    handleConditions(value = false) {  
         if (value && !Array.isArray(this.ImageSelectSiblingFieldsConditions) || !value) return;
         this.ImageSelectSiblingFieldsConditions.forEach(conditions => {
             if (conditions.hasOwnProperty('and')) {
