@@ -3,22 +3,49 @@ class ImageSelect {
         this.imageSelectField = imageSelect;
         this.imageSelectFieldGroup = this.imageSelectField?.parentElement;
         this.imageSelectFieldKey = imageSelect?.hasAttribute('data-key') ? imageSelect.getAttribute('data-key') : false;
+        this.imageSelectFieldName = this.imageSelectField?.hasAttribute('data-name') ? this.imageSelectField?.getAttribute('data-name') : "";
+
+        //Hidden conditionalfield if wanted correct more specific conditions.
+        const conditionalField = this.imageSelectFieldGroup?.querySelector('[data-name="' + this.imageSelectFieldName + '_conditional"]');
+        this.conditionalAcfField = conditionalField && conditionalField.hasAttribute('data-key') ? acf.getField(conditionalField.getAttribute('data-key')) : false;
+
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
-        this.ImageSelectSiblingFieldsConditions && this.setupListeners();
+        this.imageSelectField && this.handleConditionsType();
     }
 
     /**
      * Setup listeners and also runs the conditional once right away.
      */
-    setupListeners() {
-        this.handleConditions(false);
+    handleConditionsType() {       
+        const value = this.defaultImageSelectValue();
+
+        this.conditionalAcfField 
+            ? this.conditionalAcfField.val(value) 
+            : this.handleConditions(value);
+
+        this.setupChangeListener();
+    }
+
+    setupChangeListener() {
         this.imageSelectField.addEventListener('change', (e) => {
             if (e.target) {
                 this.imageSelectField.setAttribute('value', e.target.value);
-                this.handleConditions(e.target.value);
+                this.conditionalAcfField 
+                    ? this.conditionalAcfField.val(e.target.value)
+                    : this.handleConditions(e.target.value);
             }
         });
+    }
+
+    defaultImageSelectValue() {
+        const checked = this.imageSelectField.querySelector('input:checked');
+        if (checked) {
+            this.imageSelectField.setAttribute('value', checked.value);
+            return checked.value;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -26,18 +53,8 @@ class ImageSelect {
      *
      * @param {string} value - The selected value.
      */
-    handleConditions(value = false) {
-        if (!value) {
-            const checked = this.imageSelectField.querySelector('input:checked');
-            if (checked) {
-                this.imageSelectField.setAttribute('value', checked.value);
-                value = checked.value;
-            } else {
-                return;
-            }
-        }
-        
-        if (!Array.isArray(this.ImageSelectSiblingFieldsConditions) || !value) return;
+    handleConditions(value = false) {        
+        if (value && !Array.isArray(this.ImageSelectSiblingFieldsConditions) || !value) return;
         this.ImageSelectSiblingFieldsConditions.forEach(conditions => {
             if (conditions.hasOwnProperty('and')) {
                 this.shouldShowACFField(this.handleAndConditions(conditions.and, value), conditions.el);
@@ -130,6 +147,7 @@ class ImageSelect {
      * @returns {Array|boolean} - An array of structured sibling fields with conditions or false if none.
      */
     getSiblingFields() {
+        if (this.conditionalAcfField) return false;
         const siblings = this.imageSelectFieldGroup?.querySelectorAll('.acf-field');
         let structuredSiblingsArr = [];
         if (siblings && siblings.length > 0) {
@@ -162,6 +180,7 @@ class ImageSelect {
         if (field.hasAttribute('data-conditions') && field.hasAttribute('data-key')) {
             const conditions = this.getJsonCondition(field);
             if (!conditions || !Array.isArray(conditions)) return;
+        
             conditions.forEach(condition => {
                 if (Array.isArray(condition) && condition.length > 1) {
                     ob = this.structureAndObject(ob, condition, field);
@@ -314,7 +333,8 @@ document.addEventListener('DOMContentLoaded',() => {
                 mutation.addedNodes.forEach((addedNode) => {
                     if (addedNode instanceof HTMLElement &&
                         addedNode.classList.contains('acf-block-fields') &&
-                        addedNode.querySelector('.acf-field.acf-field-image-select')) {
+                        addedNode.querySelector('.acf-field.acf-field-image-select') &&
+                        typeof acf !== 'undefined') {
                         const imageSelectBlocks = addedNode.querySelectorAll('.acf-field.acf-field-image-select');
 
                         imageSelectBlocks.forEach(imageSelect => {
