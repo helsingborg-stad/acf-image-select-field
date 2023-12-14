@@ -24,7 +24,7 @@ To add your own images:
 1. Upload your own svg file to the assets folder. The name of the file will now be available in the field settings. It will also automatically become the value of the field.
 
 ## Limitations
-
+**Normal Conditionals (Basic)**
 The ACF Image Select plugin has the following limitations regarding conditional logic:
 
 - It supports either "and" or "or" conditionals. Not both.
@@ -35,5 +35,13 @@ The ACF Image Select plugin has the following limitations regarding conditional 
   
   **Unsupported Conditionals:**
   - "image select" != "condition1" OR "image select" != "condition2" AND "image select" != "condition3"
+ 
+This solution will allow basic conditional logic that will work in most cases.
+
+**Use Acf Conditionals (Advanced)**
+  - When creating an Image select field. Also create a "hidden" field with the same name like "{my_field_name}_conditional.
+  - Set the conditions to this field instead of Image Select.
+  - It will update the value of this field each time the Image Select field changes and work like default ACF conditions.
 
 Please keep these limitations in mind when implementing conditional logic with the ACF Image Select field.
+
