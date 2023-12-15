@@ -40,8 +40,6 @@ class ImageSelect {
         this.imageSelectField.addEventListener('change', (e) => {
             if (e.target) {
                 this.imageSelectField.setAttribute('value', e.target.value);
-                console.log('change handling: ' + this.conditionalAcfField);
-                console.log('e.target.value: ' + e.target.value);
                 this.conditionalAcfField 
                     ? this.conditionalAcfField.val(e.target.value)
                     : this.handleConditions(e.target.value);
@@ -337,9 +335,7 @@ class ImageSelect {
 }
 document.addEventListener('DOMContentLoaded',() => {
     const imageSelects = document.querySelectorAll('.acf-field.acf-field-image-select');
-    console.log("image-selects: " + imageSelects);
     if (typeof acf !== 'undefined' && imageSelects.length > 0) {
-        console.log("acf is defined");
         imageSelects.forEach(imageSelect => {
             new ImageSelect(imageSelect);
         });
@@ -354,10 +350,8 @@ document.addEventListener('DOMContentLoaded',() => {
                         addedNode.querySelector('.acf-field.acf-field-image-select') &&
                         typeof acf !== 'undefined') {
                         const imageSelectBlocks = addedNode.querySelectorAll('.acf-field.acf-field-image-select');
-                        console.log("acf is defined");
                         
                         imageSelectBlocks.forEach(imageSelect => {
-                            console.log('image-select: ' + imageSelect);
                             new ImageSelect(imageSelect);
                         });
                     }
