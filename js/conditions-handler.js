@@ -7,11 +7,15 @@ class ImageSelect {
 
         //Conditionals based on Hidden field (acf condtional logic)
         const conditionalField = this.imageSelectFieldGroup?.querySelector(`[data-name="${this.imageSelectFieldName}_conditional"]`);
+        
         this.conditionalAcfField = conditionalField?.hasAttribute('data-key') ? acf.getField(conditionalField.getAttribute('data-key')) : false;
         
-        console.log('Conditional field: ' + conditionalField);
-        console.log('Conditional field as acf: ' + conditionalAcfField);
-        //Conditionals based on Image Select field (custom conditional logic)
+        console.log('acf: ', acf);
+        console.log('ConditionalField: ' + conditionalField);
+        console.log('conditional field data key: ', conditionalField.getAttribute('data-key'));
+        console.log('acf-field: ', acf.getField('field_656f4b44999e9'));
+        console.log('real data: ', acf.getField(conditionalField.getAttribute('data-key')));
+        
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
         //Run functionality
@@ -25,7 +29,6 @@ class ImageSelect {
      */
     handleConditionsType() {       
         const value = this.defaultImageSelectValue();
-        console.log('value: ' + value);
         this.conditionalAcfField 
             ? this.conditionalAcfField.val(value) 
             : this.handleConditions(value);
