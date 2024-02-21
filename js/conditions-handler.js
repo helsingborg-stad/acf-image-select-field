@@ -29,10 +29,14 @@ class ImageSelect {
      */
     handleConditionsType() {       
         const value = this.defaultImageSelectValue();
-        this.conditionalAcfField 
-            ? this.conditionalAcfField.val(value) 
-            : this.handleConditions(value);
+        if (value) {
+            this.conditionalAcfField ? 
+                this.conditionalAcfField.val(value) : 
+                this.handleConditions(value);
 
+            this.imageSelectField.querySelector(`input[value="${value}"]`).checked = true;
+        }
+        
         this.setupChangeListener();
     }
 
@@ -56,10 +60,12 @@ class ImageSelect {
      * @returns {string} - Returns the current value of the Image Select field.
      */
     defaultImageSelectValue() {
-        const checked = this.imageSelectField.querySelector('input:checked');
+        const checked = this.imageSelectField?.querySelector('input:checked');
         if (checked) {
             this.imageSelectField.setAttribute('value', checked.value);
             return checked.value;
+        } else if (this.conditionalAcfField && this.conditionalAcfField.val()) {
+            return this.conditionalAcfField.val();
         } else {
             return "";
         }
