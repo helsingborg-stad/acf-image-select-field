@@ -6,10 +6,12 @@ class ImageSelect {
         this.imageSelectFieldName = this.imageSelectField?.hasAttribute('data-name') ? this.imageSelectField?.getAttribute('data-name') : "";
 
         //Conditionals based on Hidden field (acf condtional logic)
-        const conditionalField = this.imageSelectFieldGroup?.querySelector(`[data-name="${this.imageSelectFieldName}_conditional"]`);
-        
-        this.conditionalAcfField = conditionalField?.hasAttribute('data-key') ? acf.getField(conditionalField.getAttribute('data-key')) : false;
- 
+        const conditionalField = this.imageSelectFieldGroup ? $(this.imageSelectFieldGroup).find(`[data-name="${this.imageSelectFieldName}_conditional"]`) : false;
+
+        this.conditionalAcfField = conditionalField && conditionalField.length 
+        ? acf.getField(conditionalField) 
+        : false;
+
         this.ImageSelectSiblingFieldsConditions = this.getSiblingFields();
 
         //Run functionality
@@ -347,7 +349,6 @@ document.addEventListener('DOMContentLoaded',() => {
                         addedNode.querySelector('.acf-field.acf-field-image-select') &&
                         typeof acf !== 'undefined') {
                         const imageSelectBlocks = addedNode.querySelectorAll('.acf-field.acf-field-image-select');
-                        
                         imageSelectBlocks.forEach(imageSelect => {
                             new ImageSelect(imageSelect);
                         });
