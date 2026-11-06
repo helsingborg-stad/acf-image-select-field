@@ -2,6 +2,13 @@
 
 class AcfImageSelectField extends acf_field 
 {
+    /**
+     * Plugin path and url, used to enqueue assets.
+     *
+     * @var array
+     */
+    public $settings = array();
+
     public function __construct() {
         $this->name = 'image_select';
         $this->label = 'Image Select';
